@@ -1,3 +1,4 @@
 .env
-todo
-server
+/todo
+/server
+/tmp/todo-server
