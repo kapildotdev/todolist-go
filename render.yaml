@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: todolist-go
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false # paste Neon pooled URL in dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ACCESS_TTL_MIN
+        value: 15
+      - key: REFRESH_TTL_HOURS
+        value: 168

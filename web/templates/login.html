@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Todo — Sign in</title>
+<link rel="manifest" href="/static/manifest.webmanifest"/>
+<meta name="theme-color" content="#4f46e5"/>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<div class="auth-wrap">
+<main class="card auth-card">
+  <div class="brand"><span class="brand-mark">✓</span> Todo List Manager</div>
+  <h1>Welcome back</h1>
+  <p class="muted">Go + HTMX + Postgres · offline-first with autosave.</p>
+  <form id="auth-form">
+    <label class="muted" for="email">Email</label>
+    <input id="email" type="email" placeholder="you@example.com" required autocomplete="username"/>
+    <label class="muted" for="password">Password</label>
+    <input id="password" type="password" placeholder="min 8 characters" required autocomplete="current-password"/>
+    <div class="auth-row">
+      <button class="btn btn-primary" type="submit" id="btn-login">Login</button>
+      <button class="btn" type="button" id="btn-register">Create account</button>
+    </div>
+  </form>
+  <p id="auth-err" class="err"></p>
+  <p class="muted">JWT access (memory) + refresh (HttpOnly cookie). Try offline after first load — Service Worker keeps the app usable.</p>
+</main>
+</div>
+<div id="toasts"></div>
+<script>
+const err=document.getElementById('auth-err');
+function toast(m,k=''){const t=document.createElement('div');t.className='toast '+k;t.textContent=m;document.getElementById('toasts').appendChild(t);setTimeout(()=>t.remove(),3500);}
+async function auth(mode,btn){
+  err.textContent='';
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const orig=btn.innerHTML;btn.innerHTML='<span class="spinner"></span>…';btn.disabled=true;
+  try{
+    const res=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){err.textContent=data.error||'failed';toast(data.error||'Auth failed','err');return;}
+    sessionStorage.setItem('access_token',data.access_token);
+    toast(mode==='register'?'Account created':'Welcome back','ok');
+    setTimeout(()=>location.href='/app',400);
+  }catch(e){err.textContent='Network error — are you offline?';toast('Network error','err');}
+  finally{btn.innerHTML=orig;btn.disabled=false;}
+}
+document.getElementById('auth-form').addEventListener('submit',e=>{e.preventDefault();auth('login',document.getElementById('btn-login'));});
+document.getElementById('btn-register').addEventListener('click',e=>auth('register',e.target));
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js').catch(()=>{});}
+</script>
+</body>
+</html>

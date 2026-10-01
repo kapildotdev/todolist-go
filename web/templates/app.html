@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Todo — My Tasks</title>
+<link rel="manifest" href="/static/manifest.webmanifest"/>
+<meta name="theme-color" content="#4f46e5"/>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand"><span class="brand-mark">✓</span> Todos</span>
+  <span class="status"><span id="net-dot" class="dot"></span><span id="net">online</span></span>
+  <span class="status"><span id="dirty">✓ saved</span></span>
+  <span class="spacer"></span>
+  <button class="icon-btn" id="btn-theme" title="Toggle theme">🌙</button>
+  <button class="btn" id="btn-save">💾 Save · 0</button>
+  <button class="btn btn-ghost" id="btn-logout">Logout</button>
+</header>
+
+<main class="wrap">
+  <section class="stats">
+    <div class="card stat"><b id="st-total">0</b><span>Total</span></div>
+    <div class="card stat"><b id="st-open">0</b><span>Open</span><div class="progress"><i id="st-bar"></i></div></div>
+    <div class="card stat"><b id="st-done">0</b><span>Done 🎉</span></div>
+  </section>
+
+  <form id="new-form" class="card composer">
+    <input id="new-title" placeholder="What needs doing?  (press Enter ↵)" maxlength="200" required autocomplete="off"/>
+    <div class="composer-row">
+      <input id="new-desc" placeholder="description (optional)"/>
+      <select id="new-status"><option value="todo">📝 todo</option><option value="doing">⏳ doing</option><option value="done">✅ done</option></select>
+      <input id="new-due" type="date" title="Due date"/>
+      <button class="btn btn-primary" type="submit">Add</button>
+    </div>
+    <div class="composer-row">
+      <select id="new-priority" title="Priority"><option value="0">Priority: none</option><option value="1">▲ High</option><option value="2">● Medium</option></select>
+      <label class="switch"><input type="checkbox" id="autosave" checked/> autosave <small>(1.5s)</small></label>
+    </div>
+  </form>
+
+  <div class="toolbar card">
+    <select id="filter-status"><option value="all">All</option><option value="todo">Todo</option><option value="doing">Doing</option><option value="done">Done</option></select>
+    <input id="search" placeholder="🔍 Search tasks…" autocomplete="off"/>
+    <button class="btn" id="btn-reload">↻ Reload</button>
+  </div>
+
+  <div id="conflicts" class="card hidden"></div>
+  <div id="loading"><div class="skeleton"></div><br/><div class="skeleton"></div></div>
+  <ul id="list" class="list"></ul>
+  <p class="muted">Offline-first: edits queue in IndexedDB outbox → <code>POST /api/tasks/sync</code> (Last-Write-Wins). <b>Save</b> flushes now · <b>Ctrl+S</b> works too.</p>
+</main>
+
+<div id="modal" class="modal-back hidden">
+  <div class="card modal">
+    <h3>Edit task</h3>
+    <input id="m-title" maxlength="200"/>
+    <textarea id="m-desc" rows="3"></textarea>
+    <select id="m-status"><option value="todo">todo</option><option value="doing">doing</option><option value="done">done</option></select>
+    <select id="m-priority"><option value="0">Priority none</option><option value="1">High</option><option value="2">Medium</option></select>
+    <input id="m-due" type="date"/>
+    <div class="row" style="display:flex;gap:.5rem"><button class="btn btn-primary" id="m-save">Save</button><button class="btn" id="m-close">Cancel</button></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<script src="/static/app.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js').catch(()=>{});}</script>
+</body>
+</html>
