@@ -2,5 +2,5 @@
 .env
 tmp/
 bin/
-server
-todolist
+/server
+/todolist
